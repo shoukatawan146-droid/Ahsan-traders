@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+ <meta name="description" content="AHSAN TRADERS sanitary product price book">
+ <link rel="manifest" href="./manifest.json">
+ <link rel="icon" href="./icon-192.png" type="image/png">
+
+<title>AHSAN TRADERS — Sanitary Price Book</title>
+<style>
+:root{--navy:#111827;--blue:#2563eb;--gold:#fbbf24;--bg:#f3f5f8;--card:#fff;--text:#172033;--muted:#64748b;--line:#e2e8f0;--red:#dc2626}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Nastaliq Urdu",sans-serif}
+header{background:var(--navy);color:white;padding:20px 16px 22px}
+.top{max-width:1000px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;font-size:22px;font-weight:800;color:var(--gold);letter-spacing:.4px}
+.sub{max-width:1000px;margin:18px auto 0;font-size:clamp(22px,4vw,32px);font-weight:800}
+.tag{max-width:1000px;margin:8px auto 0;color:#cbd5e1}
+main{max-width:1000px;margin:20px auto;padding:0 12px 40px}
+button{border:0;border-radius:9px;padding:11px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.add{background:var(--gold);color:#111827}
+.primary{background:var(--blue);color:white;width:100%}
+.secondary{background:#e2e8f0;color:#1e293b}
+.search{width:100%;padding:15px 14px;border:1px solid var(--line);border-radius:12px;font-size:16px;background:white;margin-bottom:14px}
+.summary{background:white;border:1px solid var(--line);border-radius:12px;padding:17px;margin-bottom:18px}
+.summary span{display:block;color:var(--muted);font-size:14px}
+.summary strong{display:block;color:var(--blue);font-size:32px;margin-top:5px}
+.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:18px}
+.panel h2{font-size:18px;margin:0 0 12px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{font-size:13px;font-weight:700;color:#475569;display:block;margin-bottom:5px}
+input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px;min-width:0}
+.actions{display:flex;gap:8px;margin-top:14px}
+.actions button{flex:1}
+.tablewrap{overflow-x:auto;background:white;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:0;table-layout:fixed}
+th{background:var(--navy);color:white;text-align:left;font-size:12px;padding:10px 5px;overflow-wrap:anywhere}
+td{padding:12px 5px;border-bottom:1px solid var(--line);font-size:15px;vertical-align:middle;overflow-wrap:anywhere}
+th:nth-child(1),td:nth-child(1){width:7%;text-align:center}
+th:nth-child(2),td:nth-child(2){width:22%}
+th:nth-child(3),td:nth-child(3){width:22%}
+th:nth-child(4),td:nth-child(4){width:17%}
+th:nth-child(5),td:nth-child(5){width:16%}
+th:nth-child(6),td:nth-child(6){width:16%}
+td.urdu{padding-left:3px;padding-right:3px}
+.price{white-space:normal;font-size:12px}
+tr:last-child td{border-bottom:0}
+.urdu{direction:rtl;text-align:right;font-size:16px}
+.num{text-align:center;color:var(--muted)}
+.price{white-space:nowrap;font-variant-numeric:tabular-nums}
+.rowactions{white-space:nowrap}
+.edit{background:#dbeafe;color:#1d4ed8;padding:8px 10px}
+.del{background:#fee2e2;color:#b91c1c;padding:8px 10px}
+.empty{text-align:center;color:var(--muted);padding:26px}
+.note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px}
+[hidden]{display:none!important}
+@media(max-width:520px){
+ header{padding:17px 14px}.brand{font-size:19px}.fields{grid-template-columns:1fr}.sub{margin-top:16px}.panel{padding:13px}
+ th{font-size:10px;padding:9px 3px}
+ td{font-size:13px;padding:11px 3px}
+ .urdu{font-size:15px!important}
+ .price{font-size:12px}
+ .edit,.del{padding:6px 4px;font-size:11px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand"><img src="logo.png" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:9px;vertical-align:middle;margin-right:8px"> AHSAN TRADERS</div>
+    <button class="add" id="addTop">＋ Add Product</button>
+  </div>
+  <div class="sub">Sanitary Product Price Book</div>
+  <div class="tag">Simple Product Price Register</div>
+</header>
+<main>
+  <input class="search" id="search" type="search" placeholder="🔎 Search products..." aria-label="Search products">
+  <section class="summary"><span>Total Products</span><strong id="count">0</strong><span>Items</span></section>
+  <section class="panel" id="editor" hidden>
+    <h2 id="formHeading">Add Product</h2>
+    <form id="productForm">
+      <div class="fields">
+        <div><label for="english">Product Name (English) *</label><input id="english" required maxlength="100" placeholder="e.g. Push cock"></div>
+        <div><label for="urdu">Urdu Product Name (Auto-filled)</label><input id="urdu" maxlength="100" placeholder="Automatically filled from English name" dir="rtl"></div>
+        <div><label for="purchase">Purchase Price (Rs.) *</label><input id="purchase" required type="number" min="0" step="0.01" placeholder="0.00"></div>
+        <div><label for="sale">Sale Price (Rs.) *</label><input id="sale" required type="number" min="0" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="actions"><button class="primary" id="saveBtn" type="submit">Save Product</button><button class="secondary" id="cancelBtn" type="button">Cancel</button></div>
+    </form>
+  </section>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>#</th><th>English Product Name</th><th>Urdu Product Name</th><th>Purchase Price</th><th>Sale Price</th><th>Action</th></tr></thead>
+      <tbody id="productRows"></tbody>
+    </table>
+    <div class="empty" id="empty">No products yet. Select “Add Product” to get started.</div>
+  </div>
+  <p class="note">Products are saved in this browser on this device. Export a backup before clearing browser data or changing phones. Profit is not calculated. Urdu names are auto-filled and can be corrected manually if needed.</p>
+  <section class="panel">
+    <h2>Data Backup</h2>
+    <p class="note">Export your product list or restore a previous backup.</p>
+    <div class="actions"><button class="secondary" id="exportBtn" type="button">Export Backup</button><button class="secondary" id="importBtn" type="button">Import Backup</button></div>
+    <input id="importFile" type="file" accept="application/json,.json" hidden>
+  </section>
+</main>
+<script>
+(() => {
+ const KEY='ahsanTradersPriceBook_v1';
+ const $=id=>document.getElementById(id);
+ let products=[];
+ let editingId=null;
+ try { const saved=JSON.parse(localStorage.getItem(KEY)||'[]'); if(Array.isArray(saved)) products=saved; } catch(e) {}
+ function persist(){ localStorage.setItem(KEY,JSON.stringify(products)); }
+ function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ function money(v){return Number(v).toLocaleString('en-PK',{minimumFractionDigits:0,maximumFractionDigits:2});}
+ function render(){
+   const q=$('search').value.trim().toLocaleLowerCase();
+   const visible=products.filter(p=>(p.english+' '+p.urdu).toLocaleLowerCase().includes(q));
+   $('count').textContent=products.length;
+   $('productRows').innerHTML=visible.map((p,i)=>`<tr>
+    <td class="num">${i+1}</td><td>${esc(p.english)}</td><td class="urdu">${esc(p.urdu||'—')}</td>
+    <td class="price">Rs. ${money(p.purchase)}</td><td class="price">Rs. ${money(p.sale)}</td>
+    <td class="rowactions"><button class="edit" data-edit="${esc(p.id)}" aria-label="Edit ${esc(p.english)}">✏️</button> <button class="del" data-del="${esc(p.id)}" aria-label="Delete ${esc(p.english)}">🗑️</button></td>
+   </tr>`).join('');
+   $('empty').hidden=visible.length!==0;
+ }
+ function openEditor(p){
+   editingId=p?.id??null; urduWasEdited=!!p;
+   $('formHeading').textContent=editingId?'Edit Product':'Add Product';
+   $('saveBtn').textContent=editingId?'Update Product':'Save Product';
+   $('english').value=p?.english||'';$('urdu').value=p?.urdu||'';
+   $('purchase').value=p?.purchase??'';$('sale').value=p?.sale??'';
+   $('editor').hidden=false;$('editor').scrollIntoView({behavior:'smooth',block:'start'});
+   $('english').focus();
+ }
+ function closeEditor(){ $('productForm').reset();editingId=null;urduWasEdited=false;$('editor').hidden=true; }
+ $('addTop').addEventListener('click',()=>openEditor());
+ $('cancelBtn').addEventListener('click',closeEditor);
+ $('productForm').addEventListener('submit',e=>{
+   e.preventDefault();
+   const p={english:$('english').value.trim(),urdu:$('urdu').value.trim(),purchase:Number($('purchase').value),sale:Number($('sale').value)};
+   if(!p.english||$('purchase').value===''||$('sale').value===''||p.purchase<0||p.sale<0)return;
+   const old=products;
+   if(editingId){products=products.map(x=>x.id===editingId?{...x,...p}:x);}
+   else products.unshift({id:Date.now().toString(36)+Math.random().toString(36).slice(2),...p});
+   try{persist();closeEditor();render();}catch(err){products=old;alert('Could not save data. Please check available browser storage.');}
+ });
+ $('productRows').addEventListener('click',e=>{
+   const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]');
+   if(edit){const p=products.find(x=>x.id===edit.dataset.edit);if(p)openEditor(p);}
+   if(del){const p=products.find(x=>x.id===del.dataset.del);if(!p)return;if(confirm('Delete '+p.english+'?')){const old=products;products=products.filter(x=>x.id!==p.id);try{persist();render();}catch(err){products=old;alert('Could not save this change.');}}}
+ });
+
+ // Auto-fill the Urdu name from the English product name.
+ // Common sanitary product names have friendly spellings; other names use a basic offline transliteration.
+ const knownUrdu = {
+   "push cock":"پش کاک", "push cock am":"پش کاک ام", "push cock bhari":"پش کاک بھاری",
+   "johri goda":"جوڑی گوڑا", "jori goda":"جوڑی گوڑا", "jodi goda":"جوڑی گوڑا",
+   "wash basin":"واش بیسن", "washbasin":"واش بیسن", "basin":"بیسن",
+   "commode":"کموڈ", "toilet":"ٹوائلٹ", "shower":"شاور", "shower set":"شاور سیٹ",
+   "mixer":"مکسر", "mixer tap":"مکسر ٹیپ", "tap":"ٹیپ", "faucet":"فاسٹ",
+   "pipe":"پائپ", "pvc pipe":"پی وی سی پائپ", "ppr pipe":"پی پی آر پائپ",
+   "elbow":"ایلبو", "tee":"ٹی", "socket":"ساکٹ", "valve":"والو",
+   "flush tank":"فلاش ٹینک", "flush cock":"فلاش کاک", "floor drain":"فلور ڈرین",
+   "sink":"سنک", "bib cock":"بب کاک", "angle valve":"اینگل والو",
+   "hand shower":"ہینڈ شاور", "health faucet":"ہیلتھ فاسٹ", "jet spray":"جیٹ سپرے"
+ };
+ const phonetics = [
+   [/sh/gi,'ش'], [/ch/gi,'چ'], [/kh/gi,'خ'], [/gh/gi,'غ'], [/th/gi,'تھ'],
+   [/ph/gi,'ف'], [/bh/gi,'بھ'], [/dh/gi,'دھ'], [/zh/gi,'ژ'],
+   [/aa/gi,'ا'], [/ee|ii/gi,'ی'], [/oo|uu/gi,'و'], [/ai/gi,'ے'],
+   [/a/gi,''], [/b/gi,'ب'], [/c/gi,'ک'], [/d/gi,'د'], [/e/gi,''], [/f/gi,'ف'],
+   [/g/gi,'گ'], [/h/gi,'ہ'], [/i/gi,'ی'], [/j/gi,'ج'], [/k/gi,'ک'], [/l/gi,'ل'],
+   [/m/gi,'م'], [/n/gi,'ن'], [/o/gi,'و'], [/p/gi,'پ'], [/q/gi,'ق'], [/r/gi,'ر'],
+   [/s/gi,'س'], [/t/gi,'ٹ'], [/u/gi,'و'], [/v/gi,'و'], [/w/gi,'و'], [/x/gi,'کس'],
+   [/y/gi,'ی'], [/z/gi,'ز']
+ ];
+ function toUrdu(text) {
+   const key = text.trim().toLowerCase().replace(/\s+/g,' ');
+   if (!key) return '';
+   if (knownUrdu[key]) return knownUrdu[key];
+   let out = key;
+   for (const [pattern, replacement] of phonetics) out = out.replace(pattern, replacement);
+   return out.replace(/\s+/g,' ').trim();
+ }
+ let urduWasEdited = false;
+ $('urdu').addEventListener('input', () => { urduWasEdited = true; });
+ $('english').addEventListener('input', () => {
+   if (!urduWasEdited || !$('urdu').value.trim()) {
+     $('urdu').value = toUrdu($('english').value);
+     urduWasEdited = false;
+   }
+ });
+
+ $('search').addEventListener('input',render);
+ $('exportBtn').addEventListener('click',()=>{
+   const blob=new Blob([JSON.stringify(products,null,2)],{type:'application/json'});
+   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ahsan-traders-price-book-backup.json';a.click();URL.revokeObjectURL(url);
+ });
+ $('importBtn').addEventListener('click',()=>$('importFile').click());
+ $('importFile').addEventListener('change',async e=>{
+   const file=e.target.files[0];if(!file)return;
+   try{const data=JSON.parse(await file.text());if(!Array.isArray(data)||!data.every(p=>p&&typeof p.english==='string'&&p.id!==undefined&&p.purchase!==undefined&&p.sale!==undefined))throw Error('Invalid file');
+     if(confirm('Replace the current product list with '+data.length+' imported products?')){const old=products;products=data;try{persist();render();}catch(err){products=old;throw err;} }
+   }catch(err){alert('Backup file is invalid or could not be imported.');}finally{e.target.value='';}
+ });
+ render();
+})();
+</script>
+ <script>
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.error));
+  }
+ </script>
+</body>
+</html>
